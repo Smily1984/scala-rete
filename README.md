@@ -2,13 +2,15 @@ This is a Scala implementation of the RETE algorithm. Use it to implement produc
 
 # Why implement RETE in Scala?
 Two main reasons:
-1. Scala's Actor model perfectly suits the RETE network of nodes;
-2. Scala's support for building internal DSLs is by far the best out there right now;
+  1. Scala's Actor model perfectly suits the RETE network of nodes;
+  2. Scala's support for building internal DSLs is by far the best out there right now;
 
 # Terms:
-  [RETE algorithm](https://en.wikipedia.org/wiki/Rete_algorithm)
-  [Forward chaning](https://en.wikipedia.org/wiki/Forward_chaining)
-  WM - working memory
+[RETE algorithm](https://en.wikipedia.org/wiki/Rete_algorithm)
+
+[Forward chaning](https://en.wikipedia.org/wiki/Forward_chaining)
+
+WM - working memory
 
 # An Example of Forward Chaining:
 
