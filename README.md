@@ -77,9 +77,3 @@ Passes on a fact it receives without applying any logic. It's introduction simpl
 It alwas has a left side and a right side. It receives facts from alpha and dummy actors on it's left and right sides. It knows a single terminal actor.
 ## Terminal actor
 When a terminal actor receives a fact from a beta actor, it executes the RHS of the rule. For example in R1, the terminal actor will produce the "diagnosis influenza" fact.
-
-# For Later:
-## Performance benchmarks
-## IoT example
-## Telecommunications industry (catalogue driven fullfilment) example
-## Banking industry (product catalog) example
