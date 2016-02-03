@@ -11,10 +11,12 @@ Two main reasons:
 [Forward chaining](https://en.wikipedia.org/wiki/Forward_chaining)
 
 WM - working memory
+
 node - a node from a RETE network maps to an Actor in Scala
+
 fact - something we know of or we can observe, we make decisions based on facts and pre-defined rules that acts upon those facts
 
-# An Example of Forward Chaining:
+# Let's start with an example:
        
 ### Rules:
 
@@ -64,11 +66,11 @@ All facts produced by terminal nodes are "fed" back to RETE (see diagram above),
 
 ## Root actor
 Each rule gets one root actor. It knows of all underlying alpha and dummy actors. The root actor passes on each fact it receives to them.
-## Alpha node
+## Alpha actor
 Each pre-condition of a rule gets an alpha actor. For example in rule R1 there are two pre-conditions (nasal congestion and viremia). That means that R1 gets two alpha actors. The alpha actor has a predicate function that checks the corresponding pre-condition. If the predicate returns true, the fact is passed to the underlying beta actor. If the predicate returns false, nothing happens.
-##Dummy node
-Passes on a fact it receives without applying any logic. It's introduction simplifies the logic in the alpha actor. It knows about a single beta node.
-## Beta node
+##Dummy actor
+Passes on a fact it receives without applying any logic. It's introduction simplifies the logic in the alpha actor. It knows about a single beta actor.
+## Beta actor
 It alwas has a left side and a right side. It receives facts from alpha and dummy actors on it's left and right sides. It knows a single terminal actor.
-## Terminal node
-When a terminal nodes receives a fact from a beta node, it executes the RHS of the rule. For example in R1, the terminal node will produce the "diagnosis influenza" fact.
+## Terminal actor
+When a terminal actor receives a fact from a beta actor, it executes the RHS of the rule. For example in R1, the terminal actor will produce the "diagnosis influenza" fact.
