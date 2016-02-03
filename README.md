@@ -6,9 +6,9 @@ Two main reasons:
 2. Scala's support for building internal DSLs is by far the best out there right now;
 
 # Terms:
-[RETE algorithm](https://en.wikipedia.org/wiki/Rete_algorithm)
-[Forward chaning](https://en.wikipedia.org/wiki/Forward_chaining)
-WM - working memory
+  [RETE algorithm](https://en.wikipedia.org/wiki/Rete_algorithm)
+  [Forward chaning](https://en.wikipedia.org/wiki/Forward_chaining)
+  WM - working memory
 
 # An Example of Forward Chaining:
 
