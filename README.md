@@ -14,6 +14,11 @@ WM - working memory
 
 # An Example of Forward Chaining:
 
+  input facts -> RETE -> facts produced
+       ^                         |
+       |                         |
+       \- forward chaining loop -/
+       
 Rules:
 
 1. R1: nasal congestion and viremia -> diagnosis influenza
@@ -52,3 +57,25 @@ Good to know:
 An inference run finishes when no more new facts get produced as a result of one or more rules firing (i.e. when R6 fires and asserts the fact into WM, no more rules fire);
 A rule has a left-hand side (LHS) and a right-hand side (RHS);
 When facts asserted into WM match the LHS of a rule, RETE executes it's RHS and produces new facts;
+
+# Actor Design
+## Example of the network of RETE nodes being created for rule R1
+
+     Root
+    /   \
+   A1   A2
+    \   /
+      B
+      | 
+      T
+Each rule gets a root node. Each pre-condition of a rule gets an alpha node. For example in rule R1 there are two pre-conditions (nasal congestion and viremia). That means that R1 gets two alpha nodes. 
+## Root node
+Keeps track of it's underlying alpha nodes. When a root node receives a fact, it passes it along all alpha nodes it knows of.
+## Alpha node
+Has a predicate function that checks a rule pre-condition. If the predicate returns true, the fact is passed to the underlying beta node. If the predicate returns false, nothing happens.
+## Beta node
+Has always a left side and a right side. It receives facts from alpha nodes on it's left and right sides.
+## Terminal node
+When a terminal nodes receives a fact from a beta node, it executes the RHS of the rule. For example in R1, the terminal node will produce the "diagnosis influenza" fact.
+## Forward Chaning Loop (Inference Run)
+All facts produced by terminal nodes are "fed" to RETE, which then passes them to all root nodes in it's network. That's how forward chaining works. When no more terminal nodes fire, or the facts produced are already known, the inference run stops.
