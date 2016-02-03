@@ -44,18 +44,20 @@ fact - something we know of or we can observe, we make decisions based on facts 
 4. facts "fever" and "achiness" trigger rule R6, which asserts "viremia" into WM
 5. facts "viremia" and "nasal congestion" (step 1.) trigger rule R1 which then asserts "diagnosis influenza" into WM.
 
-### Bottom line is:
-
 Thee facts (F1, F2 and F3) are given as input to RETE, which then produces four new facts:
 "nasal congestion", "fever", "achiness" and "diagnosis viremia".
 
 ### Good to know:
 
-An inference run finishes when no more new facts get produced as a result of one or more rules firing (i.e. when R6 fires and asserts the fact into WM, no more rules fire);
-
 A rule has a left-hand side (LHS) and a right-hand side (RHS);
 
-When facts asserted into WM match the LHS of a rule, RETE executes it's RHS and produces new facts;
+When facts asserted into WM matches the LHS of a rule, RETE executes it's RHS and produces new facts;
+
+In order to support simultaneos and independent clients, a uniquie identifier is required for each batch of facts submitted to RETE initially. We call this an inference run id.
+
+All facts produced by terminal nodes are "fed" back to RETE (see diagram above), which then passes them to all root nodes in it's network. That's how forward chaining works. When no more terminal nodes fire, or the facts produced are already known, the inference run stops.
+
+![forward chaining loop](https://github.com/bridgeworks-nl/scala-rete/blob/master/doc/forward_chaining.png)
 
 # Actor Design
 ![rete nodes for the first and second rules](https://github.com/bridgeworks-nl/scala-rete/blob/master/doc/rete_nodes.png)
@@ -70,7 +72,3 @@ Passes on a fact it receives without applying any logic. It's introduction simpl
 It alwas has a left side and a right side. It receives facts from alpha and dummy actors on it's left and right sides. It knows a single terminal actor.
 ## Terminal node
 When a terminal nodes receives a fact from a beta node, it executes the RHS of the rule. For example in R1, the terminal node will produce the "diagnosis influenza" fact.
-## Forward Chaning Loop (Inference Run)
-All facts produced by terminal nodes are "fed" back to RETE (see diagram above), which then passes them to all root nodes in it's network. That's how forward chaining works. When no more terminal nodes fire, or the facts produced are already known, the inference run stops.
-
-![forward chaining loop](https://github.com/bridgeworks-nl/scala-rete/blob/master/doc/forward_chaining.png)
