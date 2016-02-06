@@ -2,10 +2,11 @@ package nl.bridgeworks.akka.rete
 
 import akka.actor.{ActorRef, Actor}
 
-class AlphaNodeActor(betaNode: ActorRef, side: Side) extends Actor {
+class AlphaNodeActor(betaNode: ActorRef, onSide: Side) extends Actor with ReteNodeActor {
   def receive = {
     //execute the predicate function and send to the beta node
-    case Fact(contents) => if (predicate(contents)) betaNode ! (Fact(contents), side)
+    case a: Assertion =>
+      if (predicate(a.facts.head.contents)) fire(a, onSide, Vector(betaNode))
     case _ => println("Alpha: confused.")
   }
 
