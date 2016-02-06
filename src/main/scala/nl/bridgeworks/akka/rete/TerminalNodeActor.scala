@@ -19,11 +19,15 @@ object TerminalMain {
     val t = system.actorOf(Props(new TerminalNodeActor(Vector(Fact("achiness")), cs)), "terminal")
     val b = system.actorOf(Props(new BetaNodeActor(t, NA)), "beta")
     val d = system.actorOf(Props(new DummyNodeActor(b, Left)), "dummy")
-    val a = system.actorOf(Props(new AlphaNodeActor(b, Right)), "alpha")
+    val a = system.actorOf(Props(new AlphaNodeActor(predicate, b, Right)), "alpha")
     val root = system.actorOf(Props(new RootNodeActor("R4", Vector(a, d))), "root")
 
     root ! Assertion(Vector(Fact("headache")), java.util.UUID.randomUUID.toString)
 
     system.terminate
+  }
+
+  def predicate(factToMatch: String): Boolean = {
+    factToMatch == "headache"
   }
 }
