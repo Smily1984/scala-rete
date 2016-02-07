@@ -1,8 +1,8 @@
 This is a Scala implementation of the RETE algorithm. Use it to implement production rules systems.
 
-# Why implement RETE in Scala?
+# Why implement RETE in Scala/Akka?
 Three main reasons:
-  1. Scala's Actor model perfectly suits the RETE network of nodes;
+  1. Akka's Actor model perfectly suits the RETE network of nodes;
   2. Scala's support for building internal DSLs is by far the best out there right now;
   3. Code runs on the JVM, which is pretty much the standard for large enterprises.
 
