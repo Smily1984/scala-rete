@@ -6,6 +6,9 @@ lazy val root = (project in file(".")).
     scalacOptions ++= Seq("-unchecked", "-deprecation"),
     organization := "nl.bridgeworks",
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.4.1"
+      "com.typesafe.akka" %% "akka-actor" % "2.4.1",
+      "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.13.0" % "test",
+      "org.scala-lang.modules" %% "scala-xml" % "1.0.4"
     )
   )
