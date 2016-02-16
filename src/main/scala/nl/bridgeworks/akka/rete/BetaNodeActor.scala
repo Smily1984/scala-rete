@@ -6,7 +6,7 @@ class BetaNodeActor(underlyingNode: ActorRef, onSide: Side) extends Actor with R
   def receive = {
     case (a: Assertion, from: Side) if a.facts.length == 1 =>
       //the beta node always receives a single fact in an assertion
-      if (checkWM(a.facts.head.contents, from)) onSide match {
+      if (checkWM(a.facts.head, from)) onSide match {
         case NA =>
           //pass the fact to a terminal node
           fire(a, Vector(underlyingNode))
@@ -20,8 +20,8 @@ class BetaNodeActor(underlyingNode: ActorRef, onSide: Side) extends Actor with R
   }
 
   //TODO implement the check in WM
-  def checkWM(contents: String, side: Side): Boolean = {
-    println(s"Beta: checks WM for $contents on the $side")
+  def checkWM(fact: Fact, side: Side): Boolean = {
+    println(s"Beta: checks WM for $fact on the $side")
     true
   }
 }

@@ -1,0 +1,25 @@
+- Rule: 1
+  when: nasal congestion
+  and: viremia
+  then: diagnosis influenza
+
+- Rule: 2
+  when: runny nose
+  then: nasal congestion
+
+- Rule: 3
+  when: body aches
+  then: achiness
+
+- Rule: 4
+  when: headache
+  then: achiness
+
+- Rule: 5
+  when: temp greater than 100
+  then: fever
+
+- Rule: 6
+  when: fever
+  and: achiness
+  then: viremia
