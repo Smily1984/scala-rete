@@ -1,5 +1,7 @@
 This is a Scala implementation of the RETE algorithm. Use it to implement production rules systems.
 
+[![Build Status](https://travis-ci.org/bridgeworks-nl/scala-rete.svg?branch=master)](https://travis-ci.org/bridgeworks-nl/scala-rete)
+
 # Why implement RETE in Scala/Akka?
 Three main reasons:
   1. Akka's Actor model perfectly suits the RETE network of nodes;
