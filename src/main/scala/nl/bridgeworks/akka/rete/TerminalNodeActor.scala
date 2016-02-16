@@ -32,7 +32,7 @@ object TerminalMain {
 
   def predicate(expr: Expr)(fact: Fact): Boolean = {
     expr match {
-      case s:Simple => s.concept == fact
+      case s:Simple => s.concept == fact.concept
       case v:ValueOp => false
       case _ => true
     }
