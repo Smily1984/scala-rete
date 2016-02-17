@@ -28,8 +28,8 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
   "An alpha node" must {
     "pass a fact if a simple predicate is true" in {
-      val predicate = TerminalMain.predicate(Simple("Barcelona"))_
-      val alpha = system.actorOf(Props(new AlphaNodeActor(predicate, probe1.ref, Left)))
+      val p = predicate(Simple("Barcelona"))_
+      val alpha = system.actorOf(Props(new AlphaNodeActor(p, probe1.ref, Left)))
       alpha ! Assertion(Vector(ConceptOnly("Barcelona")), inferenceRunId)
       val msg = probe1.receiveOne(1 second).asInstanceOf[(Assertion, Side)]
 
@@ -39,8 +39,8 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     }
 
     "pass a fact if a predicate with an expression is true" in {
-      val predicate = TerminalMain.predicate(ValueOp("temperature", LessThan, 100))_
-      val alpha = system.actorOf(Props(new AlphaNodeActor(predicate, probe1.ref, Right)))
+      val p = predicate(ValueOp("temperature", LessThan, 100))_
+      val alpha = system.actorOf(Props(new AlphaNodeActor(p, probe1.ref, Right)))
       alpha ! Assertion(Vector(ConceptWithValue("temperature", 90)), inferenceRunId)
       val msg = probe1.receiveOne(1 second).asInstanceOf[(Assertion, Side)]
 
@@ -51,8 +51,8 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     }
 
     "not pass a fact if a predicate is false" in {
-      val predicate = TerminalMain.predicate(Simple("John"))_
-      val alpha = system.actorOf(Props(new AlphaNodeActor(predicate, probe1.ref, Right)))
+      val p = predicate(Simple("John"))_
+      val alpha = system.actorOf(Props(new AlphaNodeActor(p, probe1.ref, Right)))
       alpha ! Assertion(Vector(ConceptOnly("Marry")), inferenceRunId)
       probe1.expectNoMsg()
     }
