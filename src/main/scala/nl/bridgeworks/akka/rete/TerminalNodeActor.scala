@@ -33,12 +33,47 @@ object TerminalMain {
   def predicate(expr: Expr)(fact: Fact): Boolean = {
     expr match {
       case s:Simple => s.concept == fact.concept
-      case v:ValueOp => false
-      case _ => true
+      //doesn't make sense to compare when there isn't a value associated with the concept
+      case v:ValueOp if fact.isInstanceOf[ConceptOnly] => false
+      //execute the operation only if the concept matches and there is a value associated with it
+      case v:ValueOp if fact.isInstanceOf[ConceptWithValue] && v.concept == fact.concept => executeExpression(v.op, v.value, fact.asInstanceOf[ConceptWithValue])
+      case _ => false
     }
   }
 
-  def executeOp(fact: Fact, op: Op, value: AnyVal): Boolean = ???
+  def executeExpression(op: Op, withValue: AnyVal, on: ConceptWithValue): Boolean = {
+    op match {
+      case Equals => on.value == withValue
+      case LessThan => lessThan(on.value, withValue)
+      case GreaterThan => greaterThan(on.value, withValue)
+    }
+  }
+
+  def lessThan(v1: AnyVal, v2: AnyVal): Boolean = {
+    if(v1.getClass == v1.getClass)
+      v1 match {
+        case i:Int => v1.asInstanceOf[Int] < v2.asInstanceOf[Int]
+        case i:Double => v1.asInstanceOf[Double] < v2.asInstanceOf[Double]
+        case _ => {
+          println("lessThan: confused " + v1.getClass.toString)
+          false
+        }
+      }
+    else false
+  }
+
+  def greaterThan(v1: AnyVal, v2: AnyVal): Boolean = {
+    if(v1.getClass == v1.getClass)
+      v1 match {
+        case i:Int => v1.asInstanceOf[Int] > v2.asInstanceOf[Int]
+        case i:Double => v1.asInstanceOf[Double] > v2.asInstanceOf[Double]
+        case _ => {
+          println("lessThan: confused " + v1.getClass.toString)
+          false
+        }
+      }
+    else false
+  }
 
   def buildReteNetwork(rules: Vector[Rule], system: ActorSystem): ActorRef = {
     val cs = system.actorOf(Props(new ConflictSetActor(Vector.empty[ActorRef])), "cs")
