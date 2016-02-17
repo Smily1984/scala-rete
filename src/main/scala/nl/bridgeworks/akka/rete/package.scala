@@ -27,10 +27,9 @@ package object rete {
       v1 match {
         case i:Int => v1.asInstanceOf[Int] < v2.asInstanceOf[Int]
         case i:Double => v1.asInstanceOf[Double] < v2.asInstanceOf[Double]
-        case _ => {
+        case _ =>
           println("lessThan: confused " + v1.getClass.toString)
           false
-        }
       }
     else false
   }
@@ -40,10 +39,9 @@ package object rete {
       v1 match {
         case i:Int => v1.asInstanceOf[Int] > v2.asInstanceOf[Int]
         case i:Double => v1.asInstanceOf[Double] > v2.asInstanceOf[Double]
-        case _ => {
+        case _ =>
           println("lessThan: confused " + v1.getClass.toString)
           false
-        }
       }
     else false
   }
