@@ -2,12 +2,18 @@ package nl.bridgeworks.akka.rete
 
 import akka.actor.{ActorRef, Actor}
 
-class ConflictSetActor(rootNodes: Vector[ActorRef]) extends Actor with ReteNodeActor {
+class ConflictSetActor extends Actor with ReteNodeActor {
+  private var rootNodes = List[ActorRef]()
+
   def receive = {
-    case Assertion(facts, runId) => {
-      println(s"CS: got $facts in a set.")
-      //TODO pass to all root nodes
-      //fire(rootNodes, Assertion(facts, runId))
+    case a:Assertion => {
+      println(s"CS: got an assertion in a set.")
+      fire(a, rootNodes)
+    }
+    case ("rule added", a:ActorRef) =>
+    {
+      println("CS: adding rule " + a)
+      rootNodes = a :: rootNodes
     }
     case _ => println("CS: confused.")
   }

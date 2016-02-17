@@ -21,7 +21,9 @@ case class ConceptWithValue(concept: String, value: AnyVal) extends Fact {
 }
 
 case class Rule(id: String, lhs: Vector[Expr], rhs: Vector[Fact])
-case class Assertion(facts: Vector[Fact], inferenceRunId: String)
+case class Assertion(facts: Vector[Fact], inferenceRunId: String) {
+  override def toString = s"Assertion($facts){$inferenceRunId}"
+}
 
 sealed trait Side
 case object Left extends Side
