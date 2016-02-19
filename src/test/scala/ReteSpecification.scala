@@ -135,22 +135,21 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     val inferenceRunId = java.util.UUID.randomUUID().toString
 
     "add an unknown fact" in {
-      val wm = addToWM(List[(Fact, String)](), ConceptOnly("Titan"), inferenceRunId)
+      val wm = update(List[String](), inferenceRunId)
       assert(wm.size == 1)
     }
 
     "skip a known fact" in {
-      val f = ConceptOnly("Titan")
-      val wm = addToWM(List[(Fact, String)](), f, inferenceRunId)
-      val wm2 = addToWM(wm, f, inferenceRunId)
+      val wm = update(List[String](), inferenceRunId)
+      val wm2 = update(wm, inferenceRunId)
 
       assert(wm.size == 1)
+      assert(wm2.size == 1)
     }
 
     "add the same fact, because it's from another inference run" in {
-      val f = ConceptOnly("Titan")
-      val wm = addToWM(List[(Fact, String)](), f, inferenceRunId)
-      val wm2 = addToWM(wm, f, inferenceRunId + "-2")
+      val wm = update(List[String](), inferenceRunId)
+      val wm2 = update(wm, inferenceRunId + "-2")
 
       assert(wm2.size == 2)
     }

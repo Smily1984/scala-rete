@@ -108,13 +108,12 @@ package object rete {
     system.actorOf(Props(new RootNodeActor(underlyingNodes)))
   }
 
-  //TODO refactor to add(fact, toWorkingMemory, andInferenceId)
-  def addToWM(wm:List[(Fact, String)], fact: Fact, inferenceRunId: String): List[(Fact ,String)] = {
-    wm.find(item => item._1 == fact && item._2 == inferenceRunId) match {
+  def update(workingMemory:List[String], withInferenceRunId:String): List[String] = {
+    workingMemory.find(item => item == withInferenceRunId) match {
       case None =>
-        (fact, inferenceRunId) :: wm
+        withInferenceRunId :: workingMemory
       case Some(_) =>
-        wm
+        workingMemory
     }
   }
 
