@@ -82,6 +82,7 @@ package object rete {
       case Nil => println("done creating beta nodes.")
       case a :: tail => {
 
+        //TODO further simplify this piece
         val b = tail match {
           case Nil => {
             val b = system.actorOf(Props(new BetaNodeActor()))
@@ -114,5 +115,14 @@ package object rete {
 
   def spinRoot(alphas: List[ActorRef], system: ActorSystem): ActorRef = {
     system.actorOf(Props(new RootNodeActor(alphas)))
+  }
+
+  def addToWM(wm:List[(Fact, String)], fact: Fact, inferenceRunId: String): List[(Fact ,String)] = {
+    wm.find(item => (item._1 == fact && item._2 == inferenceRunId)) match {
+      case None =>
+        (fact, inferenceRunId) :: wm
+      case Some(_) =>
+        wm
+    }
   }
 }

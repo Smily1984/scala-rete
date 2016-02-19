@@ -66,6 +66,7 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
       val alpha = system.actorOf(Props(new AlphaNodeActor(p, Right)))
       alpha ! ("add child", probe1.ref)
       alpha ! Assertion(Vector(ConceptOnly("Marry")), inferenceRunId)
+
       probe1.expectNoMsg()
     }
   }
@@ -98,6 +99,60 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
       val inferenceRunId = java.util.UUID.randomUUID().toString
 
       cs ! Assertion(Vector(ConceptOnly("Paris"), ConceptOnly("city")), inferenceRunId)
+    }
+  }
+
+  "A beta node" must {
+    val inferenceRunId = java.util.UUID.randomUUID().toString
+
+    "pass a fact further down if the same fact arrives on both sides" in {
+      val b = system.actorOf(Props(new BetaNodeActor()))
+      b ! ("add child", probe1.ref, NA)
+
+      b ! (Assertion(Vector(ConceptOnly("London")), inferenceRunId), Left)
+      b ! (Assertion(Vector(ConceptOnly("London")), inferenceRunId), Right)
+
+      val msg = probe1.receiveOne(1 second).asInstanceOf[(Assertion, Side)]
+
+      assert(msg._1.facts.head.asInstanceOf[ConceptOnly].concept == "London")
+      assert(msg._1.inferenceRunId == inferenceRunId)
+      assert(msg._2 == Left)
+    }
+
+    "not pass a fact if the fact arrives twice on the same side" in {
+      val b = system.actorOf(Props(new BetaNodeActor()))
+      b ! ("add child", probe1.ref, NA)
+
+      b ! (Assertion(Vector(ConceptOnly("London")), inferenceRunId), Left)
+      b ! (Assertion(Vector(ConceptOnly("London")), inferenceRunId), Left)
+
+      probe1.expectNoMsg()
+    }
+  }
+
+  //TODO property based test for this logic?
+  "WM" must {
+    val inferenceRunId = java.util.UUID.randomUUID().toString
+
+    "add an unknown fact" in {
+      val wm = addToWM(List[(Fact, String)](), ConceptOnly("Titan"), inferenceRunId)
+      assert(wm.size == 1)
+    }
+
+    "skip a known fact" in {
+      val f = ConceptOnly("Titan")
+      val wm = addToWM(List[(Fact, String)](), f, inferenceRunId)
+      val wm2 = addToWM(wm, f, inferenceRunId)
+
+      assert(wm.size == 1)
+    }
+
+    "add the same fact, because it's from another inference run" in {
+      val f = ConceptOnly("Titan")
+      val wm = addToWM(List[(Fact, String)](), f, inferenceRunId)
+      val wm2 = addToWM(wm, f, inferenceRunId + "-2")
+
+      assert(wm2.size == 2)
     }
   }
 }
