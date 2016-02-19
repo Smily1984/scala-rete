@@ -83,16 +83,15 @@ package object rete {
       case a :: tail => {
 
         val b = tail match {
-          //when dealing the last alpha node, side doesn't matter because the underlying node will be a terminal node
           case Nil => {
-            val b = system.actorOf(Props(new BetaNodeActor(NA)))
+            val b = system.actorOf(Props(new BetaNodeActor()))
             println(s"created beta node: $b", b)
+            //this is the last beta node to be created (the one above the terminal node), so link with beta and terminal
             b ! ("add child", terminal, NA)
             b
           }
-          //beta node is always on the left above another underlying beta node
           case _ => {
-            val b = system.actorOf(Props(new BetaNodeActor(Left)))
+            val b = system.actorOf(Props(new BetaNodeActor()))
             println(s"created beta node: $b", b)
             b
           }

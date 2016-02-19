@@ -6,7 +6,7 @@ class TerminalNodeActor(factsFromRHS: Vector[Fact], csNode: ActorRef) extends Ac
   def receive = {
     //a rule fires by asserting all facts from its RHS into RETE
     //TODO check if facts are already known, currently fires always
-    case a: Assertion => println(s"Terminal: $a") //fire(Assertion(factsFromRHS, a.inferenceRunId), csNode)
+    case (a:Assertion, side:Side) => println(s"Terminal: $a")
     case _ => println("Terminal: confused.")
   }
 }
