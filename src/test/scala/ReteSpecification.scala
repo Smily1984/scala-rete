@@ -17,7 +17,7 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     val inferenceRunId = java.util.UUID.randomUUID().toString
 
     "pass a fact unchanged" in {
-      val dummy = system.actorOf(Props(new DummyNodeActor(Left)))
+      val dummy = system.actorOf(Props(new DummyNodeActor()))
       //make sure the dummy knows of an underlying beta node (this is simulated by the probe)
       dummy ! ("add child", probe1.ref, NA)
       dummy ! Assertion(Vector(ConceptOnly("bla")), inferenceRunId)
@@ -34,21 +34,21 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
       val inferenceRunId = java.util.UUID.randomUUID().toString
 
       val p = predicate(Simple("Barcelona"))_
-      val alpha = system.actorOf(Props(new AlphaNodeActor(p, Left)))
+      val alpha = system.actorOf(Props(new AlphaNodeActor(p)))
       alpha ! ("add child", probe1.ref)
       alpha ! Assertion(Vector(ConceptOnly("Barcelona")), inferenceRunId)
       val msg = probe1.receiveOne(1 second).asInstanceOf[(Assertion, Side)]
 
       assert(msg._1.facts.head.asInstanceOf[ConceptOnly].concept == "Barcelona")
       assert(msg._1.inferenceRunId == inferenceRunId)
-      assert(msg._2 == Left)
+      assert(msg._2 == Right)
     }
 
     "pass a fact if a predicate with an expression is true" in {
       val inferenceRunId = java.util.UUID.randomUUID().toString
 
       val p = predicate(ValueOp("temperature", LessThan, 100))_
-      val alpha = system.actorOf(Props(new AlphaNodeActor(p, Right)))
+      val alpha = system.actorOf(Props(new AlphaNodeActor(p)))
       alpha ! ("add child", probe1.ref)
       alpha ! Assertion(Vector(ConceptWithValue("temperature", 90)), inferenceRunId)
       val msg = probe1.receiveOne(1 second).asInstanceOf[(Assertion, Side)]
@@ -63,7 +63,7 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
       val inferenceRunId = java.util.UUID.randomUUID().toString
 
       val p = predicate(Simple("John"))_
-      val alpha = system.actorOf(Props(new AlphaNodeActor(p, Right)))
+      val alpha = system.actorOf(Props(new AlphaNodeActor(p)))
       alpha ! ("add child", probe1.ref)
       alpha ! Assertion(Vector(ConceptOnly("Marry")), inferenceRunId)
 

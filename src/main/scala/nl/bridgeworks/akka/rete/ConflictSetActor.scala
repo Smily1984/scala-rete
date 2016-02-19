@@ -16,7 +16,6 @@ class ConflictSetActor extends Actor with ReteNodeActor {
       workingMemory = diffForWM.toList ++ workingMemory
       fire(diff, rootNodes)
     case ("add child", a:ActorRef) =>
-      println("CS: adding rule " + a)
       rootNodes = a :: rootNodes
     case _ => println("CS: confused.")
   }

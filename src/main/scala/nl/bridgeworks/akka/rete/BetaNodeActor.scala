@@ -22,38 +22,27 @@ class BetaNodeActor extends Actor with ReteNodeActor {
     case _ => println("Beta: confused.")
   }
 
-  //TODO implement the check in WM
   def checkWM(fact: Fact, side: Side, inferenceRunId: String): Boolean = {
-    println(s"Beta $self: checks WM for $fact on the $side")
     side match {
-      case Left => {
-        wmRight.find(item => (item._1 == fact && item._2 == inferenceRunId)) match {
+      case Left =>
+        wmRight.find(item => item._2 == inferenceRunId) match {
           case None =>
-            println("from left not found in right, adding.")
             wmLeft = addToWM(wmLeft, fact, inferenceRunId)
             false
           case Some(_) =>
-            wmLeft = addToWM(wmLeft, fact, inferenceRunId)
-            println("from left found in right!")
             true
         }
-      }
-      case Right => {
-        wmLeft.find(item => (item._1 == fact && item._2 == inferenceRunId)) match {
+      case Right =>
+        wmLeft.find(item => item._2 == inferenceRunId) match {
           case None =>
-            println("from right not found in left, adding.")
             wmRight = addToWM(wmRight, fact, inferenceRunId)
             false
           case Some(_) =>
-            wmRight = addToWM(wmRight, fact, inferenceRunId)
-            println("from right found in left!")
             true
         }
-      }
-      case _ => {
+      case _ =>
         println("Beta: (wm) confused.")
         false
-      }
     }
   }
 }

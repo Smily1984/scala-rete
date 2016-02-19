@@ -57,7 +57,7 @@ package object rete {
     //spin a terminal that will handle all facts from the RHS of the rule
     val terminal = spinTerminal(rule, csNode, system)
     //spin a single dummy node
-    val dummy = system.actorOf(Props(new DummyNodeActor(Left)))
+    val dummy = system.actorOf(Props(new DummyNodeActor()))
     //spin an alpha node for each LHS of the rule
     val alphas = spinAlpha(rule, system)
     spinBeta(alphas, terminal, dummy, system)
@@ -67,8 +67,7 @@ package object rete {
   def spinAlpha(rule: Rule, system: ActorSystem): List[ActorRef] = {
     val alphas:Vector[ActorRef] = rule.lhs map {e =>
       val p = predicate(e)_
-      //an alpha node is always on the right of an underlying beta node, see README.md
-      system.actorOf(Props(new AlphaNodeActor(p, Right)))
+      system.actorOf(Props(new AlphaNodeActor(p)))
     }
 
     alphas.toList
@@ -79,33 +78,25 @@ package object rete {
     //TODO optimize in the future and re-use an alpha node when more rules have the same expression in their LHS
     alphas match {
       //TODO here nothing really happens, how to implement "return"
-      case Nil => println("done creating beta nodes.")
-      case a :: tail => {
-
+      case Nil =>
+      case a :: tail =>
         //TODO further simplify this piece
         val b = tail match {
-          case Nil => {
+          case Nil =>
             val b = system.actorOf(Props(new BetaNodeActor()))
-            println(s"created beta node: $b", b)
             //this is the last beta node to be created (the one above the terminal node), so link with beta and terminal
             b ! ("add child", terminal, NA)
             b
-          }
-          case _ => {
+          case _ =>
             val b = system.actorOf(Props(new BetaNodeActor()))
-            println(s"created beta node: $b", b)
             b
-          }
         }
 
         //notify the nodes (d+a or b+a) above that an underlying beta node was created
-        println(s"notifying parent on the left: $parentOnLeft")
         parentOnLeft ! ("add child", b, Left)
-        println(s"notifying parent on the right: $a")
         a ! ("add child", b)
 
         spinBeta(tail, terminal, b, system)
-      }
     }
   }
 
@@ -113,13 +104,13 @@ package object rete {
     system.actorOf(Props(new TerminalNodeActor(rule.rhs, csNode)), "t-" + rule.id)
   }
 
-  def spinRoot(alphas: List[ActorRef], system: ActorSystem): ActorRef = {
-    system.actorOf(Props(new RootNodeActor(alphas)))
+  def spinRoot(underlyingNodes: List[ActorRef], system: ActorSystem): ActorRef = {
+    system.actorOf(Props(new RootNodeActor(underlyingNodes)))
   }
 
   //TODO refactor to add(fact, toWorkingMemory, andInferenceId)
   def addToWM(wm:List[(Fact, String)], fact: Fact, inferenceRunId: String): List[(Fact ,String)] = {
-    wm.find(item => (item._1 == fact && item._2 == inferenceRunId)) match {
+    wm.find(item => item._1 == fact && item._2 == inferenceRunId) match {
       case None =>
         (fact, inferenceRunId) :: wm
       case Some(_) =>
