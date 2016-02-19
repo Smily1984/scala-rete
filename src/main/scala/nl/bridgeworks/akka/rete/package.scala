@@ -47,19 +47,73 @@ package object rete {
   }
 
   def buildReteNetwork(rules: Vector[Rule], system: ActorSystem): ActorRef = {
-    val cs = system.actorOf(Props(new ConflictSetActor()), "cs")
-    val rootNodes = rules map (rule => buildRuleNetwork(rule, system, cs))
-    println("root: " + rootNodes)
-    rootNodes foreach {node => cs ! ("rule added", node)}
+    val cs = system.actorOf(Props(new ConflictSetActor()))
+    val rootNodes = rules map (rule => buildRuleNetwork(rule, cs, system))
+    rootNodes foreach {node => cs ! ("add child", node)}
     cs
   }
 
-  def buildRuleNetwork(rule: Rule, system: ActorSystem, csNode: ActorRef): ActorRef = {
-    val t = system.actorOf(Props(new TerminalNodeActor(rule.rhs, csNode)), "t-" + rule.id)
-    val b = system.actorOf(Props(new BetaNodeActor(t, NA)), "beta-" + rule.id)
-    val d = system.actorOf(Props(new DummyNodeActor(b, Left)), "dummy-" + rule.id)
-    //TODO create an alpha node for each rule LHS, supports a single LHS for now
-    val a = system.actorOf(Props(new AlphaNodeActor(predicate(rule.lhs.head), b, Right)), "alpha-" + rule.id)
-    system.actorOf(Props(new RootNodeActor(rule.id, List(a, d))), "root-" + rule.id)
+  def buildRuleNetwork(rule: Rule, csNode: ActorRef, system: ActorSystem): ActorRef = {
+    //spin a terminal that will handle all facts from the RHS of the rule
+    val terminal = spinTerminal(rule, csNode, system)
+    //spin a single dummy node
+    val dummy = system.actorOf(Props(new DummyNodeActor(Left)))
+    //spin an alpha node for each LHS of the rule
+    val alphas = spinAlpha(rule, system)
+    spinBeta(alphas, terminal, dummy, system)
+    spinRoot(dummy :: alphas, system)
+  }
+
+  def spinAlpha(rule: Rule, system: ActorSystem): List[ActorRef] = {
+    val alphas:Vector[ActorRef] = rule.lhs map {e =>
+      val p = predicate(e)_
+      //an alpha node is always on the right of an underlying beta node, see README.md
+      system.actorOf(Props(new AlphaNodeActor(p, Right)))
+    }
+
+    alphas.toList
+  }
+
+  def spinBeta(alphas: List[ActorRef], terminal: ActorRef, parentOnLeft: ActorRef, system: ActorSystem): Unit = {
+    //there's always the same amount of alpha nodes as beta nodes
+    //TODO optimize in the future and re-use an alpha node when more rules have the same expression in their LHS
+    alphas match {
+      //TODO here nothing really happens, how to implement "return"
+      case Nil => println("done creating beta nodes.")
+      case a :: tail => {
+
+        val b = tail match {
+          //when dealing the last alpha node, side doesn't matter because the underlying node will be a terminal node
+          case Nil => {
+            val b = system.actorOf(Props(new BetaNodeActor(NA)))
+            println(s"created beta node: $b", b)
+            b ! ("add child", terminal, NA)
+            b
+          }
+          //beta node is always on the left above another underlying beta node
+          case _ => {
+            val b = system.actorOf(Props(new BetaNodeActor(Left)))
+            println(s"created beta node: $b", b)
+            b
+          }
+        }
+
+        //notify the nodes (d+a or b+a) above that an underlying beta node was created
+        println(s"notifying parent on the left: $parentOnLeft")
+        parentOnLeft ! ("add child", b, Left)
+        println(s"notifying parent on the right: $a")
+        a ! ("add child", b)
+
+        spinBeta(tail, terminal, b, system)
+      }
+    }
+  }
+
+  def spinTerminal(rule: Rule, csNode: ActorRef, system: ActorSystem): ActorRef = {
+    system.actorOf(Props(new TerminalNodeActor(rule.rhs, csNode)), "t-" + rule.id)
+  }
+
+  def spinRoot(alphas: List[ActorRef], system: ActorSystem): ActorRef = {
+    system.actorOf(Props(new RootNodeActor(alphas)))
   }
 }

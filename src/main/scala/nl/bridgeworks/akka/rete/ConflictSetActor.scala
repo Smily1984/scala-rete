@@ -9,7 +9,7 @@ class ConflictSetActor extends Actor with ReteNodeActor {
     case a:Assertion =>
       println(s"CS: got an assertion in a set.")
       fire(a, rootNodes)
-    case ("rule added", a:ActorRef) =>
+    case ("add child", a:ActorRef) =>
       println("CS: adding rule " + a)
       rootNodes = a :: rootNodes
     case _ => println("CS: confused.")
