@@ -17,6 +17,7 @@ class ConflictSetActor extends Actor with ReteNodeActor {
       fire(diff, rootNodes)
     case ("add child", a:ActorRef) =>
       rootNodes = a :: rootNodes
+    case "print" => println(s"$workingMemory")
     case _ => println("CS: confused.")
   }
 }

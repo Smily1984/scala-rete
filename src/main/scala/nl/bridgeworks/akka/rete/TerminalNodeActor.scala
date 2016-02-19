@@ -31,11 +31,10 @@ object TerminalMain {
     val r5 = Rule("5", Vector[Expr](ValueOp("temp", GreaterThan, 100)), Vector[Fact](ConceptOnly("fever")))
     val r6 = Rule("6", Vector[Expr](Simple("fever"), Simple("achiness")), Vector[Fact](ConceptOnly("viremia")))
 
-    val rules = Vector[Rule](r6)
+    val rules = Vector[Rule](r1, r2, r3, r4, r5, r6)
 
     val cs = buildReteNetwork(rules, system)
-    //cs ! Assertion(Vector(ConceptOnly("runny nose"), ConceptWithValue("temp", 101), ConceptOnly("headache")), java.util.UUID.randomUUID.toString)
-    cs ! Assertion(Vector(ConceptOnly("fever"), ConceptOnly("achiness")), java.util.UUID.randomUUID.toString)
+    cs ! Assertion(Vector(ConceptOnly("runny nose"), ConceptWithValue("temp", 101), ConceptOnly("headache")), java.util.UUID.randomUUID.toString)
 
     Thread.sleep(2000)
 
