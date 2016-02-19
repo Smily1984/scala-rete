@@ -5,8 +5,7 @@ import akka.actor.{ActorRef, ActorSystem, Actor}
 class TerminalNodeActor(factsFromRHS: Vector[Fact], csNode: ActorRef) extends Actor with ReteNodeActor {
   def receive = {
     //a rule fires by asserting all facts from its RHS into RETE
-    //TODO check if facts are already known, currently fires always
-    case (a:Assertion, side:Side) => println(s"Terminal: $a")
+    case (a:Assertion, side:Side) => fire(Assertion(factsFromRHS, a.inferenceRunId), csNode) //println(s"Terminal: $factsFromRHS")
     case _ => println("Terminal: confused.")
   }
 }
@@ -25,7 +24,7 @@ object TerminalMain {
     val rules = Vector[Rule](r4)
 
     val cs = buildReteNetwork(rules, system)
-    cs ! Assertion(Vector(ConceptOnly("headache")), java.util.UUID.randomUUID.toString)
+    cs ! Assertion(Vector(ConceptOnly("runny nose"), ConceptWithValue("temp", 101), ConceptOnly("headache")), java.util.UUID.randomUUID.toString)
 
     system.terminate
   }

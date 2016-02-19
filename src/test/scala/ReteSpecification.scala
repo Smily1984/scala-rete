@@ -72,7 +72,7 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
   }
 
   "A RETE network with one rule" must {
-    val rule = Rule("single", Vector(Simple("Paris")), Vector(ConceptOnly("capital of France")))
+    val rule = Rule("single", Vector(Simple("Belmopan")), Vector(ConceptOnly("capital of Belize")))
     val cs = buildReteNetwork(Vector(rule), system)
 
     "initialize without errors" in {
@@ -83,7 +83,7 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     "handle an assertion without errors" in {
       val inferenceRunId = java.util.UUID.randomUUID().toString
 
-      //cs ! Assertion(Vector(ConceptOnly("Paris")), inferenceRunId)
+      cs ! Assertion(Vector(ConceptOnly("Belmopan")), inferenceRunId)
     }
   }
 
@@ -153,6 +153,17 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
       val wm2 = addToWM(wm, f, inferenceRunId + "-2")
 
       assert(wm2.size == 2)
+    }
+  }
+
+  "Conflict resolution" must {
+    "add new fact" in {
+      val inferenceRunId = java.util.UUID.randomUUID().toString
+      val a = delta(List[(Fact, String)](), Assertion(Vector(ConceptOnly("Amsterdam")), inferenceRunId))
+
+      assert(a.facts.size == 1)
+      assert(a.inferenceRunId == inferenceRunId)
+      assert(a.facts.head.concept == "Amsterdam")
     }
   }
 }

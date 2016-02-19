@@ -117,6 +117,7 @@ package object rete {
     system.actorOf(Props(new RootNodeActor(alphas)))
   }
 
+  //TODO refactor to add(fact, toWorkingMemory, andInferenceId)
   def addToWM(wm:List[(Fact, String)], fact: Fact, inferenceRunId: String): List[(Fact ,String)] = {
     wm.find(item => (item._1 == fact && item._2 == inferenceRunId)) match {
       case None =>
@@ -124,5 +125,13 @@ package object rete {
       case Some(_) =>
         wm
     }
+  }
+
+  def delta(workingMemory:List[(Fact, String)], withAssertion:Assertion): Assertion = {
+    //TODO distinct facts in the assertion
+    //extract the facts already known for this particular inference run
+    val knownFactsForThisInferenceRun:List[Fact] = for (f <- workingMemory; if f._2 == withAssertion.inferenceRunId) yield f._1
+    val newFacts:Set[Fact] = withAssertion.facts.toSet.diff(knownFactsForThisInferenceRun.toSet)
+    Assertion(newFacts.toVector, withAssertion.inferenceRunId)
   }
 }
