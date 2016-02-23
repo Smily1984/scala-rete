@@ -158,11 +158,27 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
   "Conflict resolution" must {
     "add new fact" in {
       val inferenceRunId = java.util.UUID.randomUUID().toString
-      val a = delta(List[(Fact, String)](), Assertion(Vector(ConceptOnly("Amsterdam")), inferenceRunId))
+      val d = delta(List[(Fact, String)](), Assertion(Vector(ConceptOnly("Amsterdam")), inferenceRunId))
 
-      assert(a.facts.size == 1)
-      assert(a.inferenceRunId == inferenceRunId)
-      assert(a.facts.head.concept == "Amsterdam")
+      assert(d.facts.size == 1)
+      assert(d.inferenceRunId == inferenceRunId)
+      assert(d.facts.head.concept == "Amsterdam")
+    }
+
+    "filter out and skip a fact that's already known" in {
+      val inferenceRunId = java.util.UUID.randomUUID().toString
+      val d = delta(List((ConceptOnly("Amsterdam"), inferenceRunId)), Assertion(Vector(ConceptOnly("Amsterdam")), inferenceRunId))
+
+      assert(d.facts.isEmpty)
+    }
+
+    "add the fact if it's another inference run" in {
+      val inferenceRunId = java.util.UUID.randomUUID().toString
+      val d = delta(List((ConceptOnly("Amsterdam"), inferenceRunId)), Assertion(Vector(ConceptOnly("Amsterdam")), inferenceRunId + "-another"))
+
+      assert(d.facts.size == 1)
+      assert(d.inferenceRunId == inferenceRunId + "-another")
+      assert(d.facts.head.concept == "Amsterdam")
     }
   }
 }
