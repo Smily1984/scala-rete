@@ -118,7 +118,6 @@ package object rete {
   }
 
   def delta(workingMemory:List[(Fact, String)], withAssertion:Assertion): Assertion = {
-    //TODO distinct facts in the assertion
     //extract the facts already known for this particular inference run
     val knownFactsForThisInferenceRun:List[Fact] = for (f <- workingMemory; if f._2 == withAssertion.inferenceRunId) yield f._1
     val newFacts:Set[Fact] = withAssertion.facts.toSet.diff(knownFactsForThisInferenceRun.toSet)
@@ -128,5 +127,6 @@ package object rete {
   def ensureSafety(forAssertion:Assertion): Assertion = {
     //concepts like "" doesn't make sense
     Assertion(forAssertion.facts.filter(f => f.concept.length > 0), forAssertion.inferenceRunId)
+    //TODO distinct facts in the assertion
   }
 }
