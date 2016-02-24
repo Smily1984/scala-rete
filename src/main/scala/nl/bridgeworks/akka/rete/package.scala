@@ -124,4 +124,9 @@ package object rete {
     val newFacts:Set[Fact] = withAssertion.facts.toSet.diff(knownFactsForThisInferenceRun.toSet)
     Assertion(newFacts.toVector, withAssertion.inferenceRunId)
   }
+
+  def ensureSafety(forAssertion:Assertion): Assertion = {
+    //concepts like "" doesn't make sense
+    Assertion(forAssertion.facts.filter(f => f.concept.length > 0), forAssertion.inferenceRunId)
+  }
 }

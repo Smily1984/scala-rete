@@ -180,5 +180,12 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
       assert(d.inferenceRunId == inferenceRunId + "-another")
       assert(d.facts.head.concept == "Amsterdam")
     }
+
+    "do nothing with an empty assertion" in {
+      val inferenceRunId = java.util.UUID.randomUUID().toString
+      val d = ensureSafety(Assertion(Vector(ConceptOnly("")), inferenceRunId))
+
+      assert(d.facts.isEmpty)
+    }
   }
 }

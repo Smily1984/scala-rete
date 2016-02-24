@@ -10,7 +10,7 @@ class ConflictSetActor extends Actor with ReteNodeActor {
   def receive = {
     case a:Assertion =>
       //extract uknown facts, pass them only - this makes sure a known fact produced from a terminal node doesn't cause an infinite loop
-      val diff:Assertion = delta(workingMemory, withAssertion = a)
+      val diff:Assertion = delta(workingMemory, withAssertion = ensureSafety(a))
       //make the facts from the assertion suitable to be added to working memory
       val diffForWM = diff.facts map {f => (f, a.inferenceRunId)}
       workingMemory = diffForWM.toList ++ workingMemory

@@ -36,7 +36,7 @@ object TerminalMain {
     val cs = buildReteNetwork(rules, system)
     cs ! Assertion(Vector(ConceptOnly("runny nose"), ConceptWithValue("temp", 101), ConceptOnly("headache")), java.util.UUID.randomUUID.toString)
 
-    Thread.sleep(2000)
+    Thread.sleep(50)
 
     cs ! "print"
 
