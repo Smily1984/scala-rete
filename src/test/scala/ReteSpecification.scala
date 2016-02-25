@@ -188,4 +188,44 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
       assert(d.facts.isEmpty)
     }
   }
+
+  "A terminal node" must {
+    "produce a new fact when it gets an assertion from a node above" in {
+      val inferenceRunId = java.util.UUID.randomUUID().toString
+
+      val a = Vector(ConceptOnly("Belmopan"))
+      val p = Vector(ConceptOnly("capital of Belize"))
+
+      //hook up the terminal node to the probe instead of the conflict set node
+      val terminal = system.actorOf(Props(new TerminalNodeActor(p, probe1.ref)))
+      terminal ! (Assertion(a, inferenceRunId), Right)
+      val msg = probe1.receiveOne(1 second).asInstanceOf[Assertion]
+
+      assert(msg.facts.head.asInstanceOf[ConceptOnly].concept == "capital of Belize")
+      assert(msg.inferenceRunId == inferenceRunId)
+    }
+  }
+
+  "A root node" must {
+    "pass a fact to all underlying nodes" in {
+      val inferenceRunId = java.util.UUID.randomUUID().toString
+
+      val a = Vector(ConceptOnly("Belmopan"))
+
+      val root = system.actorOf(Props(new RootNodeActor(List(probe1.ref, probe1.ref, probe1.ref))))
+      root ! Assertion(a, inferenceRunId)
+
+      val msg = probe1.receiveOne(1 second).asInstanceOf[Assertion]
+      assert(msg.facts.head.asInstanceOf[ConceptOnly].concept == "Belmopan")
+      assert(msg.inferenceRunId == inferenceRunId)
+
+      val msg2 = probe1.receiveOne(1 second).asInstanceOf[Assertion]
+      assert(msg == msg2)
+
+      val msg3 = probe1.receiveOne(1 second).asInstanceOf[Assertion]
+      assert(msg == msg3)
+      
+      probe1.expectNoMsg
+    }
+  }
 }
