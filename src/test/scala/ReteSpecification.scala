@@ -13,9 +13,9 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
   val probe1 = TestProbe()
 
-  "A dummy node" must {
-    val inferenceRunId = java.util.UUID.randomUUID().toString
+  val inferenceRunId = java.util.UUID.randomUUID().toString
 
+  "A dummy node" must {
     "pass a fact unchanged" in {
       val dummy = system.actorOf(Props(new DummyNodeActor()))
       //make sure the dummy knows of an underlying beta node (this is simulated by the probe)
@@ -31,8 +31,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
   "An alpha node" must {
     "pass a fact if a simple predicate is true" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
-
       val p = predicate(Simple("Barcelona"))_
       val alpha = system.actorOf(Props(new AlphaNodeActor(p)))
       alpha ! ("add child", probe1.ref)
@@ -45,8 +43,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     }
 
     "pass a fact if a predicate with an expression is true" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
-
       val p = predicate(ValueOp("temperature", LessThan, 100))_
       val alpha = system.actorOf(Props(new AlphaNodeActor(p)))
       alpha ! ("add child", probe1.ref)
@@ -60,8 +56,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     }
 
     "not pass a fact if a predicate is false" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
-
       val p = predicate(Simple("John"))_
       val alpha = system.actorOf(Props(new AlphaNodeActor(p)))
       alpha ! ("add child", probe1.ref)
@@ -81,8 +75,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
     //TODO how to check if the actor logs INFO messages?
     "handle an assertion without errors" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
-
       cs ! Assertion(Vector(ConceptOnly("Belmopan")), inferenceRunId)
     }
   }
@@ -96,15 +88,11 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     }
 
     "handle an assertion without errors" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
-
       cs ! Assertion(Vector(ConceptOnly("Paris"), ConceptOnly("city")), inferenceRunId)
     }
   }
 
   "A beta node" must {
-    val inferenceRunId = java.util.UUID.randomUUID().toString
-
     "pass a fact further down if the same fact arrives on both sides" in {
       val b = system.actorOf(Props(new BetaNodeActor()))
       b ! ("add child", probe1.ref, NA)
@@ -132,8 +120,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
   //TODO property based test for this logic?
   "WM" must {
-    val inferenceRunId = java.util.UUID.randomUUID().toString
-
     "add an unknown fact" in {
       val wm = update(List[String](), inferenceRunId)
       assert(wm.size == 1)
@@ -157,7 +143,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
   "Conflict resolution" must {
     "add new fact" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
       val d = delta(List[(Fact, String)](), Assertion(Vector(ConceptOnly("Amsterdam")), inferenceRunId))
 
       assert(d.facts.size == 1)
@@ -166,14 +151,12 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     }
 
     "filter out and skip a fact that's already known" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
       val d = delta(List((ConceptOnly("Amsterdam"), inferenceRunId)), Assertion(Vector(ConceptOnly("Amsterdam")), inferenceRunId))
 
       assert(d.facts.isEmpty)
     }
 
     "add the fact if it's another inference run" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
       val d = delta(List((ConceptOnly("Amsterdam"), inferenceRunId)), Assertion(Vector(ConceptOnly("Amsterdam")), inferenceRunId + "-another"))
 
       assert(d.facts.size == 1)
@@ -182,7 +165,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
     }
 
     "do nothing with an empty assertion" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
       val d = ensureSafety(Assertion(Vector(ConceptOnly("")), inferenceRunId))
 
       assert(d.facts.isEmpty)
@@ -191,8 +173,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
   "A terminal node" must {
     "produce a new fact when it gets an assertion from a node above" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
-
       val a = Vector(ConceptOnly("Belmopan"))
       val p = Vector(ConceptOnly("capital of Belize"))
 
@@ -208,8 +188,6 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
   "A root node" must {
     "pass a fact to all underlying nodes" in {
-      val inferenceRunId = java.util.UUID.randomUUID().toString
-
       val a = Vector(ConceptOnly("Belmopan"))
 
       val root = system.actorOf(Props(new RootNodeActor(List(probe1.ref, probe1.ref, probe1.ref))))
@@ -224,7 +202,7 @@ class ReteSpecification(_system: ActorSystem) extends TestKit(_system) with Impl
 
       val msg3 = probe1.receiveOne(1 second).asInstanceOf[Assertion]
       assert(msg == msg3)
-      
+
       probe1.expectNoMsg
     }
   }
