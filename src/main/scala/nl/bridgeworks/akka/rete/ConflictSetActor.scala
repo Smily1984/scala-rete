@@ -1,8 +1,8 @@
 package nl.bridgeworks.akka.rete
 
-import akka.actor.{ActorRef, Actor}
+import akka.actor.{ActorLogging, ActorRef, Actor}
 
-class ConflictSetActor extends Actor with ReteNodeActor {
+class ConflictSetActor extends Actor with ReteNodeActor with ActorLogging {
   //makes sure known facts aren't passed through
   var workingMemory = List[(Fact, String)]()
   private var rootNodes = List[ActorRef]()
@@ -17,7 +17,7 @@ class ConflictSetActor extends Actor with ReteNodeActor {
       fire(diff, rootNodes)
     case ("add child", a:ActorRef) =>
       rootNodes = a :: rootNodes
-    case "print" => println(s"$workingMemory")
-    case _ => println("CS: confused.")
+    case "print" => log.debug(s"$workingMemory")
+    case _ => log.warning("CS: confused.")
   }
 }

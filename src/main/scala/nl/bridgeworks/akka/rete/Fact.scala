@@ -14,15 +14,15 @@ sealed trait Fact {
   val concept:String
 }
 case class ConceptOnly(concept: String) extends Fact {
-  override def toString = s"Fact($concept)"
+  override def toString:String = s"Fact($concept)"
 }
 case class ConceptWithValue(concept: String, value: AnyVal) extends Fact {
-  override def toString = s"Fact($concept){$value}"
+  override def toString:String = s"Fact($concept){$value}"
 }
 
 case class Rule(id: String, lhs: Vector[Expr], rhs: Vector[Fact])
 case class Assertion(facts: Vector[Fact], inferenceRunId: String) {
-  override def toString = s"Assertion($facts){$inferenceRunId}"
+  override def toString:String = s"Assertion($facts){$inferenceRunId}"
 }
 
 sealed trait Side

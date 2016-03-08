@@ -1,10 +1,10 @@
 package nl.bridgeworks.akka.rete
 
-import akka.actor.{ActorRef, Actor}
+import akka.actor.{ActorLogging, ActorRef, Actor}
 
-class RootNodeActor(underlyingNodes: List[ActorRef]) extends Actor with ReteNodeActor {
+class RootNodeActor(underlyingNodes: List[ActorRef]) extends Actor with ReteNodeActor with ActorLogging {
   def receive = {
     case a: Assertion => fire(a, underlyingNodes)
-    case _ => println(s"Root: confused.")
+    case _ => log.warning(s"Root: confused.")
   }
 }

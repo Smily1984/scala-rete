@@ -16,7 +16,7 @@ package object rete {
 
   def executeExpression(op: Op, withValue: AnyVal, on: ConceptWithValue): Boolean = {
     op match {
-      case Equals => on.value == withValue
+        case Equals => on.value == withValue
       case LessThan => lessThan(on.value, withValue)
       case GreaterThan => greaterThan(on.value, withValue)
     }
@@ -27,9 +27,7 @@ package object rete {
       v1 match {
         case i:Int => v1.asInstanceOf[Int] < v2.asInstanceOf[Int]
         case i:Double => v1.asInstanceOf[Double] < v2.asInstanceOf[Double]
-        case _ =>
-          println("lessThan: confused " + v1.getClass.toString)
-          false
+        case _ => false
       }
     else false
   }
@@ -39,9 +37,7 @@ package object rete {
       v1 match {
         case i:Int => v1.asInstanceOf[Int] > v2.asInstanceOf[Int]
         case i:Double => v1.asInstanceOf[Double] > v2.asInstanceOf[Double]
-        case _ =>
-          println("lessThan: confused " + v1.getClass.toString)
-          false
+        case _ => false
       }
     else false
   }
