@@ -15,6 +15,13 @@ object ConsoleApp {
     val r5 = Rule("5", Vector[Expr](ValueOp("temp", GreaterThan, 100)), Vector[Fact](ConceptOnly("fever")))
     val r6 = Rule("6", Vector[Expr](Simple("fever"), Simple("achiness")), Vector[Fact](ConceptOnly("viremia")))
 
+    val r7 = Rule("7", Vector[Expr](Simple("Single with few financial burdens")), Vector[Fact](ConceptOnly("5 points")))
+    val r8 = Rule("8", Vector[Expr](Simple("A couple with children")), Vector[Fact](ConceptOnly("3 points")))
+    val r9 = Rule("9", Vector[Expr](Simple("Young family with a home")), Vector[Fact](ConceptOnly("1 points")))
+    val r10 = Rule("10", Vector[Expr](Simple("Mature family")), Vector[Fact](ConceptOnly("5 points")))
+    val r11 = Rule("11", Vector[Expr](Simple("Preparing for retirement")), Vector[Fact](ConceptOnly("3 points")))
+    val r12 = Rule("12", Vector[Expr](Simple("Retired")), Vector[Fact](ConceptOnly("1 points")))
+
     val rules = Vector[Rule](r1, r2, r3, r4, r5, r6)
 
     val cs = buildReteNetwork(rules, system)

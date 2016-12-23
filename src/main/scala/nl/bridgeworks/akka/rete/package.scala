@@ -7,6 +7,7 @@ package object rete {
     expr match {
       case s:Simple => s.concept == fact.concept
       //doesn't make sense to compare when there isn't a value associated with the concept
+      //TODO implement as an extra pattern match
       case v:ValueOp if fact.isInstanceOf[ConceptOnly] => false
       //execute the operation only if the concept matches and there is a value associated with it
       case v:ValueOp if fact.isInstanceOf[ConceptWithValue] && v.concept == fact.concept => executeExpression(v.op, v.value, fact.asInstanceOf[ConceptWithValue])
